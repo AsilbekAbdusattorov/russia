@@ -1,17 +1,13 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Header scroll effect
+    // ========== Header Scroll Effect ==========
     const header = document.querySelector('.header');
     if (header) {
         window.addEventListener('scroll', function() {
-            if (window.scrollY > 50) {
-                header.classList.add('scrolled');
-            } else {
-                header.classList.remove('scrolled');
-            }
+            header.classList.toggle('scrolled', window.scrollY > 50);
         });
     }
 
-    // Mobile menu with animations
+    // ========== Mobile Menu ==========
     const menuToggle = document.querySelector('.menu-toggle');
     const mainNav = document.querySelector('.main-nav');
     
@@ -32,14 +28,15 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Smooth scrolling with offset
+    // ========== Smooth Scrolling ==========
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function(e) {
             e.preventDefault();
             
-            if (this.getAttribute('href') === '#') return;
+            const targetId = this.getAttribute('href');
+            if (targetId === '#') return;
             
-            const target = document.querySelector(this.getAttribute('href'));
+            const target = document.querySelector(targetId);
             if (target) {
                 const headerHeight = document.querySelector('.header')?.offsetHeight || 80;
                 const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - headerHeight;
@@ -58,7 +55,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Video controls
+    // ========== Video Controls ==========
     const video = document.querySelector('.hero-video video');
     const playPauseBtn = document.querySelector('.play-pause');
     const muteUnmuteBtn = document.querySelector('.mute-unmute');
@@ -83,28 +80,21 @@ document.addEventListener('DOMContentLoaded', function() {
             if (video.paused) {
                 video.play();
                 this.innerHTML = '<i class="fas fa-pause"></i>';
-                this.classList.add('active');
             } else {
                 video.pause();
                 this.innerHTML = '<i class="fas fa-play"></i>';
-                this.classList.remove('active');
             }
         });
         
         muteUnmuteBtn.addEventListener('click', function() {
-            if (video.muted) {
-                video.muted = false;
-                this.innerHTML = '<i class="fas fa-volume-up"></i>';
-                this.classList.remove('active');
-            } else {
-                video.muted = true;
-                this.innerHTML = '<i class="fas fa-volume-mute"></i>';
-                this.classList.add('active');
-            }
+            video.muted = !video.muted;
+            this.innerHTML = video.muted ? 
+                '<i class="fas fa-volume-mute"></i>' : 
+                '<i class="fas fa-volume-up"></i>';
         });
     }
     
-    // Tab system with animations
+    // ========== Tab System ==========
     const tabBtns = document.querySelectorAll('.tab-btn');
     const tabContents = document.querySelectorAll('.tab-content');
     
@@ -122,44 +112,45 @@ document.addEventListener('DOMContentLoaded', function() {
             // Add active class to current
             this.classList.add('active');
             const activeTab = document.getElementById(`${tabId}-tab`);
-            activeTab.classList.add('active');
-            activeTab.style.animation = 'fadeIn 0.4s ease';
-        });
-    });
-    
-    // FAQ accordion with animations
-    const faqQuestions = document.querySelectorAll('.faq-question');
-    
-    faqQuestions.forEach(question => {
-        question.addEventListener('click', function() {
-            const faqItem = this.parentElement;
-            const answer = this.nextElementSibling;
-            
-            if (faqItem.classList.contains('active')) {
-                faqItem.classList.remove('active');
-                answer.style.maxHeight = '0';
-            } else {
-                // Close all others
-                document.querySelectorAll('.faq-item.active').forEach(item => {
-                    if (item !== faqItem) {
-                        item.classList.remove('active');
-                        item.querySelector('.faq-answer').style.maxHeight = '0';
-                    }
-                });
-                
-                // Open this one
-                faqItem.classList.add('active');
-                answer.style.maxHeight = answer.scrollHeight + 'px';
+            if (activeTab) {
+                activeTab.classList.add('active');
+                activeTab.style.animation = 'fadeIn 0.4s ease';
             }
         });
     });
     
-    // Messenger widget
-    const messengerToggle = document.querySelector('.messenger-toggle');
+    // ========== FAQ Accordion ==========
+    const faqItems = document.querySelectorAll('.faq-item');
+    
+    faqItems.forEach(item => {
+        const question = item.querySelector('.faq-question');
+        const answer = item.querySelector('.faq-answer');
+        
+        if (question && answer) {
+            question.addEventListener('click', function() {
+                // Close all other items
+                if (!item.classList.contains('active')) {
+                    document.querySelectorAll('.faq-item.active').forEach(activeItem => {
+                        activeItem.classList.remove('active');
+                        activeItem.querySelector('.faq-answer').style.maxHeight = '0';
+                    });
+                }
+                
+                // Toggle current item
+                item.classList.toggle('active');
+                answer.style.maxHeight = item.classList.contains('active') ? 
+                    answer.scrollHeight + 'px' : '0';
+            });
+        }
+    });
+    
+    // ========== Messenger Widget ==========
     const messengerWidget = document.querySelector('.messenger-widget');
     
-    if (messengerToggle && messengerWidget) {
-        messengerToggle.addEventListener('click', function(e) {
+    if (messengerWidget) {
+        const messengerToggle = messengerWidget.querySelector('.messenger-toggle');
+        
+        messengerToggle?.addEventListener('click', function(e) {
             e.stopPropagation();
             messengerWidget.classList.toggle('active');
         });
@@ -175,7 +166,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Form validation
+    // ========== Form Validation ==========
     const consultationForm = document.getElementById('consultationForm');
     
     if (consultationForm) {
@@ -184,16 +175,16 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Validate captcha
             const captcha = document.getElementById('captcha');
-            if (captcha && captcha.value !== '10') {
+            if (captcha && captcha.value.trim() !== '10') {
                 shakeElement(captcha);
-                return;
+                return false;
             }
             
             // Validate name
             const nameInput = consultationForm.querySelector('input[name="name"]');
             if (nameInput && !nameInput.value.trim()) {
                 shakeElement(nameInput);
-                return;
+                return false;
             }
             
             // Validate phone if in active tab
@@ -201,26 +192,28 @@ document.addEventListener('DOMContentLoaded', function() {
             const phoneInput = activeTab?.querySelector('input[type="tel"]');
             if (phoneInput && !phoneInput.value.trim()) {
                 shakeElement(phoneInput);
-                return;
+                return false;
             }
             
-            // Show success animation
+            // Show success state
             const submitBtn = consultationForm.querySelector('.submit-btn');
             if (submitBtn) {
-                submitBtn.innerHTML = '<i class="fas fa-check"></i> Sent!';
-                submitBtn.style.backgroundColor = 'var(--success-color)';
+                const originalText = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<i class="fas fa-check"></i> Отправлено!';
+                submitBtn.classList.add('success');
                 
                 setTimeout(() => {
-                    submitBtn.innerHTML = 'Send Message';
-                    submitBtn.style.backgroundColor = '';
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.classList.remove('success');
                 }, 3000);
             }
             
             consultationForm.reset();
+            return false;
         });
     }
     
-    // Phone mask
+    // ========== Phone Mask ==========
     const phoneInputs = document.querySelectorAll('input[type="tel"], input[name="whatsapp"], input[name="phone"]');
     
     phoneInputs.forEach(input => {
@@ -235,127 +228,82 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Animation helper function
+    // ========== Animation Helper ==========
     function shakeElement(element) {
-        element.style.animation = 'shake 0.5s';
+        element.classList.add('shake');
         element.focus();
         setTimeout(() => {
-            element.style.animation = '';
+            element.classList.remove('shake');
         }, 500);
     }
 
-    // Add CSS for animations
-    const style = document.createElement('style');
-    style.textContent = `
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-            20%, 40%, 60%, 80% { transform: translateX(5px); }
-        }
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        @keyframes slideInLeft {
-            from { opacity: 0; transform: translateX(-50px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-        @keyframes slideInRight {
-            from { opacity: 0; transform: translateX(50px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-        @keyframes scaleIn {
-            from { opacity: 0; transform: scale(0.8); }
-            to { opacity: 1; transform: scale(1); }
-        }
-    `;
-    document.head.appendChild(style);
-
-    // Enhanced scroll animations for sections
-    const animateSectionsOnScroll = function() {
-        const sections = document.querySelectorAll('section');
-        const features = document.querySelectorAll('.feature');
-        const priceCards = document.querySelectorAll('.price-card');
-        const benefitCards = document.querySelectorAll('.benefit-card');
-        const steps = document.querySelectorAll('.step');
-        const contactImages = document.querySelectorAll('.contact-images img');
+    // ========== Scroll Animations ==========
+    const animateOnScroll = function() {
+        const animateElements = [
+            { selector: 'section', animation: 'fadeInUp' },
+            { selector: '.feature', animation: 'fadeInUp', delay: 0.1 },
+            { selector: '.price-card', animation: 'scaleIn', delay: 0.1 },
+            { selector: '.benefit-card', animation: 'fadeInUp', delay: 0.1 },
+            { selector: '.step', animation: 'slideInLeft', delay: 0.1 },
+            { selector: '.contact-images img', animation: 'fadeIn', delay: 0.2 }
+        ];
         
-        // Animate sections
-        sections.forEach((section, index) => {
-            const sectionPosition = section.getBoundingClientRect().top;
-            const screenPosition = window.innerHeight / 1.3;
-            
-            if (sectionPosition < screenPosition) {
-                // Different animations for different sections
-                if (section.id === 'home') {
-                    section.style.animation = 'fadeIn 0.8s ease forwards';
-                } else if (section.id === 'prices') {
-                    section.style.animation = 'slideInLeft 0.8s ease forwards';
-                } else if (section.id === 'about') {
-                    section.style.animation = 'slideInRight 0.8s ease forwards';
-                } else {
-                    section.style.animation = 'fadeInUp 0.8s ease forwards';
+        const screenPosition = window.innerHeight / 1.3;
+        
+        animateElements.forEach(config => {
+            document.querySelectorAll(config.selector).forEach((element, index) => {
+                if (element.getBoundingClientRect().top < screenPosition) {
+                    const delay = config.delay ? index * config.delay : 0;
+                    element.style.animation = `${config.animation} 0.6s ease forwards ${delay}s`;
                 }
-            }
-        });
-        
-        // Animate features
-        features.forEach((feature, index) => {
-            const featurePosition = feature.getBoundingClientRect().top;
-            const screenPosition = window.innerHeight / 1.3;
-            
-            if (featurePosition < screenPosition) {
-                feature.style.animation = `fadeInUp 0.5s ease forwards ${index * 0.1}s`;
-            }
-        });
-        
-        // Animate price cards
-        priceCards.forEach((card, index) => {
-            const cardPosition = card.getBoundingClientRect().top;
-            const screenPosition = window.innerHeight / 1.3;
-            
-            if (cardPosition < screenPosition) {
-                card.style.animation = `scaleIn 0.6s ease forwards ${index * 0.1}s`;
-            }
-        });
-        
-        // Animate benefit cards
-        benefitCards.forEach((card, index) => {
-            const cardPosition = card.getBoundingClientRect().top;
-            const screenPosition = window.innerHeight / 1.3;
-            
-            if (cardPosition < screenPosition) {
-                card.style.animation = `fadeInUp 0.6s ease forwards ${index * 0.1}s`;
-            }
-        });
-        
-        // Animate steps
-        steps.forEach((step, index) => {
-            const stepPosition = step.getBoundingClientRect().top;
-            const screenPosition = window.innerHeight / 1.3;
-            
-            if (stepPosition < screenPosition) {
-                step.style.animation = `slideInLeft 0.6s ease forwards ${index * 0.1}s`;
-            }
-        });
-        
-        // Animate contact images
-        contactImages.forEach((img, index) => {
-            const imgPosition = img.getBoundingClientRect().top;
-            const screenPosition = window.innerHeight / 1.3;
-            
-            if (imgPosition < screenPosition) {
-                img.style.animation = `fadeIn 0.6s ease forwards ${index * 0.2}s`;
-            }
+            });
         });
     };
     
     // Run animations on scroll and on load
-    window.addEventListener('scroll', animateSectionsOnScroll);
-    window.addEventListener('load', animateSectionsOnScroll);
-    animateSectionsOnScroll();
+    window.addEventListener('scroll', animateOnScroll);
+    window.addEventListener('load', animateOnScroll);
+    animateOnScroll();
 });
+
+// Add CSS for animations
+const style = document.createElement('style');
+style.textContent = `
+    /* Animation Keyframes */
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+        20%, 40%, 60%, 80% { transform: translateX(5px); }
+    }
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    @keyframes slideInLeft {
+        from { opacity: 0; transform: translateX(-50px); }
+        to { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes slideInRight {
+        from { opacity: 0; transform: translateX(50px); }
+        to { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes scaleIn {
+        from { opacity: 0; transform: scale(0.8); }
+        to { opacity: 1; transform: scale(1); }
+    }
+    
+    /* Animation Classes */
+    .shake {
+        animation: shake 0.5s;
+    }
+    
+    /* Form Success State */
+    .submit-btn.success {
+        background-color: #4CAF50 !important;
+    }
+`;
+document.head.appendChild(style);
