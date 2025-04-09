@@ -703,6 +703,7 @@ img {
 .why-we-image {
     flex: 1;
     max-width: 50%;
+    height: 600px;
     border-radius: var(--border-radius);
     box-shadow: var(--shadow-md);
 }
