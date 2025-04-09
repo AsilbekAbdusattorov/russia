@@ -701,12 +701,12 @@ img {
 }
 
 .why-we-image {
-    flex: 1;
-    max-width: 50%;
-    height: 600px;
+    max-width: 100%;
+    height: auto;
     border-radius: var(--border-radius);
     box-shadow: var(--shadow-md);
 }
+
 
 /* Benefits Grid */
 .benefits-grid {
