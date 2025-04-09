@@ -79,6 +79,7 @@ h1 {
 
 h2 {
     font-size: 2rem;
+    margin-top: 3rem;
     margin-bottom: 1.5rem;
     position: relative;
     padding-bottom: 0.5rem;
@@ -86,12 +87,15 @@ h2 {
 }
 
 h3 {
+    margin-top: 5px;
+    margin-bottom: 5px;
     font-size: 1.5rem;
     text-transform: uppercase;
     font-family: 'Roboto', sans-serif;
 }
 
 p {
+    text-align: center;
     margin-bottom: 1.5rem;
     font-size: 1rem;
     line-height: 1.7;
@@ -984,13 +988,21 @@ img {
     overflow: hidden;
     box-shadow: 0 12px 25px rgba(0, 0, 0, 0.1);
     position: relative;
+    max-width: 600px;
+    padding: 0;
+    margin: 0;
 }
 
+.consultation-image img {
+    display: block;
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+}
 .specialist-info {
     position: absolute;
     bottom: 0;
     left: 0;
-    max-width: 553px;
     width: 100%;
     background: var(--secondary-color);
     color: white;
@@ -1003,6 +1015,7 @@ img {
     color: white;
     font-size: 0.9rem;
 }
+
 
 /* Contacts Section */
 .contacts {
