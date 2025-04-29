@@ -1,0 +1,9 @@
+{
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "destination": "https://territoriallawyer.ru/$1",
+      "permanent": true
+    }
+  ]
+}
